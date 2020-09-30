@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 Vue.use(Vuex)
+Vue.config.devtools = true
+
 
 export default new Vuex.Store({
   state: {
@@ -16,11 +18,11 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    addItem({commit, state}, item){
-      commit('addRoadMapItem', state, item);
+    addItem({commit}, item){
+      commit('addRoadMapItem', item);
     },
-    removeItem({commit, state}, idx) {
-      commit('removeRoadMapItem', state, idx)
+    removeItem({commit}, idx) {
+      commit('removeRoadMapItem', idx)
     }
   },
   getters: {

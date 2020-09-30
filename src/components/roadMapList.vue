@@ -72,7 +72,14 @@ import { mapActions } from 'vuex';
       ...mapActions({
         add: 'addItem',
         remove: 'removeItem'
-      })
+      }),
+      addItem(item) {
+        this.add(item);
+        this.input = "";
+      },
+      removeItem(idx) {
+        this.remove(idx);
+      }
     },
     computed: {
       roadMapItems() {

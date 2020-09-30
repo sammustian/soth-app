@@ -1,9 +1,5 @@
 <template>
   <v-app>
-    <v-navigation-drawer app>
-      <!-- -->
-    </v-navigation-drawer>
-
     <!-- -->
     <v-app-bar app color="grey darken-3" dark>
       <v-spacer></v-spacer>
