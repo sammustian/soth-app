@@ -1,13 +1,12 @@
-// Conveniently import this file anywhere to use db
-
 import firebase from 'firebase/app'
 import 'firebase/firestore'
 
+// Get a Firestore instance
 export const db = firebase
-    .initializeApp({ projectId: 'soth-app' })
-    .firestore()
+  .initializeApp({ projectId: 'soth-app' })
+  .firestore()
 
+// Export types that exists in Firestore
+// This is not always necessary, but it's used in other examples
+export const { TimeStamp, GeoPoint } = firebase.firestore
 
-// Export types that exists in Firestore - Uncomment if you need them in your app
-// const { Timestamp, GeoPoint } = firebase.firestore
-// export { Timestamp, GeoPoint }

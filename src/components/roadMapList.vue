@@ -7,7 +7,7 @@
         <v-card shaped elevation="2" width="400px">
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title>{{item}}</v-list-item-title>
+            <v-list-item-title>{{item.text}}</v-list-item-title>
           </v-list-item-content>
              <v-btn
               class="mx-2"
@@ -15,7 +15,7 @@
               dark
               small
               color="primary"
-              @click="removeItem(idx)"
+              @click="remove(item.id)"
             >
             <v-icon dark>
               mdi-minus
@@ -43,7 +43,7 @@
               fab
               dark
               color="indigo"
-              @click="addItem(input)"
+              @click="add(input)"
             >
               <v-icon dark>
                 mdi-plus
@@ -56,12 +56,12 @@
 </template>
 
 <script lang="js">
-import { mapActions } from 'vuex';
+import { mapActions, mapState } from 'vuex';
   export default  {
     name: 'road-map-list',
     props: [],
     mounted () {
-
+      this.load();
     },
     data () {
       return {
@@ -70,22 +70,25 @@ import { mapActions } from 'vuex';
     },
     methods: {
       ...mapActions({
-        add: 'addItem',
-        remove: 'removeItem'
+        load: 'bindRoadMapItemsRef',
+        addItem: 'bindAddRoadMapItemRef',
+        removeItem: 'bindRemoveRoadMapItemRef'
+        // add: 'addItem',
+        // remove: 'removeItem'
       }),
-      addItem(item) {
-        this.add(item);
+      add(item) {
+        this.addItem(item);
         this.input = "";
       },
-      removeItem(idx) {
-        this.remove(idx);
+      remove(id) {
+        this.removeItem(id);
       }
     },
-    computed: {
-      roadMapItems() {
-        return this.$store.getters.getRoadMapItems;
-      }
-    }
+    computed: mapState(['roadMapItems'])
+    // roadMapItems() {
+    //   return this.$store.getters.getRoadMapItems;
+    // }
+    
 }
 
 
