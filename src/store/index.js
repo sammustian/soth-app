@@ -13,12 +13,7 @@ export default new Vuex.Store({
 		roadMapItems: [],
 	},
 	mutations: {
-		// addRoadMapItem(state, item) {
-		//   state.roadMapItems.push(item);
-		// },
-		// removeRoadMapItem(state, idx) {
-		//   state.roadMapItems.splice(idx, 1);
-		// },
+
 		...vuexfireMutations
 	},
 	actions: {
@@ -33,17 +28,6 @@ export default new Vuex.Store({
 		bindRemoveRoadMapItemRef: firestoreAction((context, id) => {
 			return db.collection('roadMapItems').doc(id).delete()
 		})
-		// addItem: firestoreAction( context => {
-		//   context.bindFirestoreRef(
-		//     //db.collections()
-		//   )
-		// }) 
-		// addItem({commit}, item){
-		//   commit('addRoadMapItem', item);
-		// },
-		// removeItem({commit}, idx) {
-		//   commit('removeRoadMapItem', idx)
-		// }
 	},
 	getters: {
 		// getRoadMapItems: state => state.roadMapItems

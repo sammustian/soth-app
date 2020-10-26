@@ -1,17 +1,28 @@
 <template>
   <div class="home">
-    <roadMapList></roadMapList>
+    {{ console }}
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import roadMapList from '@/components/roadMapList.vue'
-
+import fleaFlickerAPI from "../../util/fleaflicker.js";
 export default {
-  name: 'Home',
-  components: {
-    roadMapList
-  }
-}
+  name: "Home",
+  components: {},
+  data() {
+    return {
+      data: {},
+      console: "",
+    };
+  },
+  mounted() {
+    this.getPlayoffData('2019');
+  },
+
+  methods: {
+    getPlayoffData(year) {
+      this.data = fleaFlickerAPI.getPlayoffData(year);
+    }
+  },
+};
 </script>

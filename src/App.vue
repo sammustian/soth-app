@@ -2,6 +2,17 @@
   <v-app>
     <!-- -->
     <v-app-bar app color="grey darken-3" dark>
+      <v-btn class="mx-3" color="secondary" elevation="10" large :to="'/'"
+        >Home</v-btn
+      >
+      <v-btn
+        class="mx-3"
+        color="secondary"
+        elevation="10"
+        large
+        :to="'/roadmap'"
+        >Roadmap</v-btn
+      >
       <v-spacer></v-spacer>
       <v-btn
         href="https://www.fleaflicker.com/nfl/leagues/199769/scores"
