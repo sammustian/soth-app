@@ -51,7 +51,7 @@ export default class fleaFlickerAPI {
         //get divisions
 
         let leagueInfo = await this.callEndPoint("FetchLeagueStandings", {
-            season: "2019"
+            season: "2020"
         }).then(res => res);
         for (let member of leagueMembers) {
             let match = leagueInfo.divisions[0].teams.some((divisionTeam) => {
@@ -75,57 +75,65 @@ export default class fleaFlickerAPI {
     static async buildPlayerStandingsDataStructure() {
         let leagueMembers = await this.getLeagueMembers();
         let weeks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-        
+
         for (let week of weeks) {
             let games = await this.callEndPoint("FetchLeagueScoreboard", {
-                season: "2019",
+                season: "2020",
                 scoring_period: week
             }).then(res => res.games);
+            //console.log(games);
+
 
             for (let game of games) {
+                if (parseInt(game.awayScore.score.formatted) !== 0 && parseInt(game.homeScore.score.formatted) !== 0 ) {
+                    let homeMemberIndex = leagueMembers.findIndex((member) => member.id == game.home.id);
+                    let awayMemberIndex = leagueMembers.findIndex((member) => member.id == game.away.id);
+                    //@note: add win conditions for games not played and games in progress
+                    
+                    leagueMembers[homeMemberIndex].games.push({
+                        id: game.id,
+                        week: week,
+                        win: (game.isInProgress ? null : (game.homeResult == "WIN" ? true : false)),
+                        matchup: leagueMembers[awayMemberIndex],
+                        score: game.homeScore,
+                        isDivisional: (game.isDivisional ? true : false),
+                        gameInProgress: (game.isInProgress ? true : false)
+                    });
 
-                let homeMemberIndex = leagueMembers.findIndex((member) => member.id == game.home.id);
-                let awayMemberIndex = leagueMembers.findIndex((member) => member.id == game.away.id);
-                
-                leagueMembers[homeMemberIndex].games.push({
-                    week: week,
-                    win: (game.homeResult == "WIN" ? true : false ),
-                    matchup: leagueMembers[awayMemberIndex],
-                    score: game.homeScore,
-                    isDivisional: game.isDivisional,
+                    leagueMembers[awayMemberIndex].games.push({
+                        id: game.id,
+                        week: week,
+                        win: (game.isInProgress ? null : (game.awayResult == "WIN" ? true : false)),
+                        matchup: leagueMembers[homeMemberIndex],
+                        score: game.awayScore,
+                        isDivisional: (game.isDivisional ? true : false),
+                        gameInProgress: (game.isInProgress ? true : false)
+                    });
 
-                });
-
-                leagueMembers[awayMemberIndex].games.push({
-                    week: week,
-                    win: (game.awayResult == "WIN" ? true : false ),
-                    matchup: leagueMembers[homeMemberIndex],
-                    score: game.awayScore,
-                    isDivisional: game.isDivisional
-                });
-
+                }
             }
-            
+            //break;
+
             //record game to leagueMember
             leagueMembers.forEach((member, index) => {
                 let wins = 0;
                 let losses = 0;
-               //console.log(member);
-               member.games.forEach((game) => {
+                //console.log(member);
+                member.games.forEach((game) => {
                     if (game.win == true) {
                         wins++;
-                    } else {
+                    } else if (game.win == false) {
                         losses++;
                     }
                 });
-              
+
                 //console.log(member.name, wins, losses);
                 leagueMembers[index].standings = `${wins}-${losses}`;
                 leagueMembers[index].wins = wins;
                 leagueMembers[index].losses = losses;
             });
         }
-   console.log(leagueMembers);
+        console.log(leagueMembers);
     }
 
     static async getPlayoffData() {
