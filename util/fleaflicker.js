@@ -3,7 +3,6 @@ const leagueID = 199769;
 export default class fleaFlickerAPI {
     constructor() {
 
-
     }
 
     static async callEndPoint(route, options = {}) {
@@ -30,6 +29,9 @@ export default class fleaFlickerAPI {
     }
 
     static async getLeagueMembers() {
+
+        //get members
+
         let leagueMembers = [];
         let rosters = await this.callEndPoint("FetchLeagueRosters", {
             season: "2019",
@@ -41,34 +43,89 @@ export default class fleaFlickerAPI {
                 id: roster.team.id,
                 initials: roster.team.initials,
                 name: roster.team.name,
-                games: {}
+                games: []
             }
             leagueMembers.push(obj);
         });
-        //get divisons
+
+        //get divisions
+
         let leagueInfo = await this.callEndPoint("FetchLeagueStandings", {
             season: "2019"
         }).then(res => res);
         for (let member of leagueMembers) {
-            //leagueInfo.divisons[0]
+            let match = leagueInfo.divisions[0].teams.some((divisionTeam) => {
+                return divisionTeam.id == member.id
+            });
+            if (match) {
+                member.division = {
+                    id: leagueInfo.divisions[0].id,
+                    name: leagueInfo.divisions[0].name
+                }
+            } else {
+                member.division = {
+                    id: leagueInfo.divisions[1].id,
+                    name: leagueInfo.divisions[1].name
+                }
+            }
         }
+        return leagueMembers;
     }
 
     static async buildPlayerStandingsDataStructure() {
-        console.log('here');
         let leagueMembers = await this.getLeagueMembers();
-        console.log(leagueMembers);
         let weeks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-         for (let week of weeks) {
-                await this.callEndPoint("FetchLeagueScoreboard", {
-                    season: "2019",
-                    scoring_period: week
-                }).then(res => {
-                    console.log(res)
-                });
-                break;
-        }
+        
+        for (let week of weeks) {
+            let games = await this.callEndPoint("FetchLeagueScoreboard", {
+                season: "2019",
+                scoring_period: week
+            }).then(res => res.games);
 
+            for (let game of games) {
+
+                let homeMemberIndex = leagueMembers.findIndex((member) => member.id == game.home.id);
+                let awayMemberIndex = leagueMembers.findIndex((member) => member.id == game.away.id);
+                
+                leagueMembers[homeMemberIndex].games.push({
+                    week: week,
+                    win: (game.homeResult == "WIN" ? true : false ),
+                    matchup: leagueMembers[awayMemberIndex],
+                    score: game.homeScore,
+                    isDivisional: game.isDivisional,
+
+                });
+
+                leagueMembers[awayMemberIndex].games.push({
+                    week: week,
+                    win: (game.awayResult == "WIN" ? true : false ),
+                    matchup: leagueMembers[homeMemberIndex],
+                    score: game.awayScore,
+                    isDivisional: game.isDivisional
+                });
+
+            }
+            
+            //record game to leagueMember
+            leagueMembers.forEach((member, index) => {
+                let wins = 0;
+                let losses = 0;
+               //console.log(member);
+               member.games.forEach((game) => {
+                    if (game.win == true) {
+                        wins++;
+                    } else {
+                        losses++;
+                    }
+                });
+              
+                //console.log(member.name, wins, losses);
+                leagueMembers[index].standings = `${wins}-${losses}`;
+                leagueMembers[index].wins = wins;
+                leagueMembers[index].losses = losses;
+            });
+        }
+   console.log(leagueMembers);
     }
 
     static async getPlayoffData() {

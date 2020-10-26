@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    {{ console }}
+    {{ data }}
   </div>
 </template>
 
