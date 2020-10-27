@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    {{ data }}
+    {{ console }}
   </div>
 </template>
 
@@ -16,12 +16,13 @@ export default {
     };
   },
   mounted() {
-    this.getPlayoffData('2019');
+    this.getPlayoffData('2020');
   },
 
   methods: {
-    getPlayoffData(year) {
-      this.data = fleaFlickerAPI.getPlayoffData(year);
+    async getPlayoffData(year) {
+      await fleaFlickerAPI.getPlayoffData(year)
+      .then((res) => this.data = res);
     }
   },
 };

@@ -21,7 +21,7 @@ export default class fleaFlickerAPI {
 
     static async getRankingTeams() {
         await this.callEndPoint("FetchLeagueStandings", {
-            season: "2019",
+            season: "2020",
         }).then(res => {
             console.log(res);
             return res;
@@ -31,19 +31,23 @@ export default class fleaFlickerAPI {
     static async getLeagueMembers() {
 
         //get members
-
         let leagueMembers = [];
         let rosters = await this.callEndPoint("FetchLeagueRosters", {
-            season: "2019",
-            scoring_period: 12
+            season: "2020",
+           // scoring_period: 12
         }).then(res => res.rosters);
 
         rosters.forEach((roster) => {
+            console.log(roster);
             let obj = {
-                id: roster.team.id,
+                id: parseInt(roster.team.id),
                 initials: roster.team.initials,
                 name: roster.team.name,
-                games: []
+                games: [],
+                pointsFor: roster.team.pointsFor,
+                pointsAgainst: roster.team.pointsAgainst,
+                streak: roster.team.streak,
+                waiverPosition: roster.team.waiverPostion
             }
             leagueMembers.push(obj);
         });
@@ -81,7 +85,6 @@ export default class fleaFlickerAPI {
                 season: "2020",
                 scoring_period: week
             }).then(res => res.games);
-            //console.log(games);
 
 
             for (let game of games) {
@@ -89,12 +92,30 @@ export default class fleaFlickerAPI {
                     let homeMemberIndex = leagueMembers.findIndex((member) => member.id == game.home.id);
                     let awayMemberIndex = leagueMembers.findIndex((member) => member.id == game.away.id);
                     //@note: add win conditions for games not played and games in progress
-                    
+                  //  console.log(leagueMembers[awayMemberIndex]);
+                    let awayMatchup = {
+                        name: leagueMembers[awayMemberIndex].name,
+                        id: leagueMembers[awayMemberIndex].id,
+                        score: game.awayScore.score,
+                        isDivisional: (game.isDivisional ? true : false),
+                        gameInProgress: (game.isInProgress ? true : false)
+
+                    };
+                    let homeMatchup = {
+                        name: leagueMembers[homeMemberIndex].name,
+                        id: leagueMembers[homeMemberIndex].id,
+                        score: game.homeScore.score,
+                        isDivisional: (game.isDivisional ? true : false),
+                        gameInProgress: (game.isInProgress ? true : false)
+                    };
+
                     leagueMembers[homeMemberIndex].games.push({
                         id: game.id,
                         week: week,
+                        home: true,
+                        away: false,
                         win: (game.isInProgress ? null : (game.homeResult == "WIN" ? true : false)),
-                        matchup: leagueMembers[awayMemberIndex],
+                        matchup: awayMatchup,
                         score: game.homeScore,
                         isDivisional: (game.isDivisional ? true : false),
                         gameInProgress: (game.isInProgress ? true : false)
@@ -103,8 +124,10 @@ export default class fleaFlickerAPI {
                     leagueMembers[awayMemberIndex].games.push({
                         id: game.id,
                         week: week,
+                        home: false,
+                        away: true,
                         win: (game.isInProgress ? null : (game.awayResult == "WIN" ? true : false)),
-                        matchup: leagueMembers[homeMemberIndex],
+                        matchup: homeMatchup,
                         score: game.awayScore,
                         isDivisional: (game.isDivisional ? true : false),
                         gameInProgress: (game.isInProgress ? true : false)
@@ -133,37 +156,13 @@ export default class fleaFlickerAPI {
                 leagueMembers[index].losses = losses;
             });
         }
-        console.log(leagueMembers);
+        
+        return leagueMembers;
     }
 
-    static async getPlayoffData() {
-        let standings = {};
-        //await this.getRankingTeams();
-        //let weeksNumbers = [13, 14, 15, 16];
-
-        //build player standings data
-        this.buildPlayerStandingsDataStructure();
-
-        //order teams by current rankings 1 - 4
-        //get player standings @ week 12
-
-
-        //sort player standings into top 4 and bottom 4
-        //get players matchups
-
-
-        // for (const week of weeksNumbers) {
-        //     console.log(week)
-        //     await this.callEndPoint("FetchLeagueScoreboard", {
-        //         season: "2019",
-        //         scoring_period: week
-        //     }).then(res => {
-        //         console.log(res)
-        //     });
-
-        // }
-
-        return standings;
+    static async getPlayoffData(year) {
+        return await this.buildPlayerStandingsDataStructure(year);
+    
     }
 
 }
