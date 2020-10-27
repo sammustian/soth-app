@@ -19,22 +19,13 @@ export default class fleaFlickerAPI {
         return results;
     }
 
-    static async getRankingTeams() {
-        await this.callEndPoint("FetchLeagueStandings", {
-            season: "2020",
-        }).then(res => {
-            console.log(res);
-            return res;
-        });
-    }
-
-    static async getLeagueMembers() {
+    static async getLeagueMembers(year) {
 
         //get members
         let leagueMembers = [];
         let rosters = await this.callEndPoint("FetchLeagueRosters", {
-            season: "2020",
-           // scoring_period: 12
+            season: year,
+            // scoring_period: 12
         }).then(res => res.rosters);
 
         rosters.forEach((roster) => {
@@ -47,7 +38,8 @@ export default class fleaFlickerAPI {
                 pointsFor: roster.team.pointsFor,
                 pointsAgainst: roster.team.pointsAgainst,
                 streak: roster.team.streak,
-                waiverPosition: roster.team.waiverPostion
+                waiverPosition: roster.team.waiverPostion,
+                logoUrl: roster.team.logoUrl ? roster.team.logoUrl : 'https://pkimgcdn.peekyou.com/c88f18e64d9814b3ce14fb4b18ef0f59.jpeg'
             }
             leagueMembers.push(obj);
         });
@@ -55,7 +47,7 @@ export default class fleaFlickerAPI {
         //get divisions
 
         let leagueInfo = await this.callEndPoint("FetchLeagueStandings", {
-            season: "2020"
+            season: year
         }).then(res => res);
         for (let member of leagueMembers) {
             let match = leagueInfo.divisions[0].teams.some((divisionTeam) => {
@@ -76,23 +68,23 @@ export default class fleaFlickerAPI {
         return leagueMembers;
     }
 
-    static async buildPlayerStandingsDataStructure() {
-        let leagueMembers = await this.getLeagueMembers();
+    static async buildPlayerStandingsDataStructure(year) {
+        let leagueMembers = await this.getLeagueMembers(year);
         let weeks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
         for (let week of weeks) {
             let games = await this.callEndPoint("FetchLeagueScoreboard", {
-                season: "2020",
+                season: year,
                 scoring_period: week
             }).then(res => res.games);
 
 
             for (let game of games) {
-                if (parseInt(game.awayScore.score.formatted) !== 0 && parseInt(game.homeScore.score.formatted) !== 0 ) {
+                if (parseInt(game.awayScore.score.formatted) !== 0 && parseInt(game.homeScore.score.formatted) !== 0) {
                     let homeMemberIndex = leagueMembers.findIndex((member) => member.id == game.home.id);
                     let awayMemberIndex = leagueMembers.findIndex((member) => member.id == game.away.id);
                     //@note: add win conditions for games not played and games in progress
-                  //  console.log(leagueMembers[awayMemberIndex]);
+                    //  console.log(leagueMembers[awayMemberIndex]);
                     let awayMatchup = {
                         name: leagueMembers[awayMemberIndex].name,
                         id: leagueMembers[awayMemberIndex].id,
@@ -133,6 +125,8 @@ export default class fleaFlickerAPI {
                         gameInProgress: (game.isInProgress ? true : false)
                     });
 
+                } else {
+                    break;
                 }
             }
             //break;
@@ -156,13 +150,13 @@ export default class fleaFlickerAPI {
                 leagueMembers[index].losses = losses;
             });
         }
-        
+
         return leagueMembers;
     }
 
     static async getPlayoffData(year) {
         return await this.buildPlayerStandingsDataStructure(year);
-    
+
     }
 
 }

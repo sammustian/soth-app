@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import roadMapList from '@/components/roadMapList.vue'
+import roadMapList from '@/components/RoadMapList.vue'
 export default {
 
   name: 'Home',
