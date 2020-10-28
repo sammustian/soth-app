@@ -1,17 +1,18 @@
 <template>
-  <v-container v-show="leagueMembers">
-    <v-row justify="space-around">
-      <DivisionRankings
+  <v-container v-show="members">
+    <v-row justify="center">
+      <DivisionRankings class="ma-5"
         :title="'Top Jake'"
         :division="divisonOneMembers"
       ></DivisionRankings>
-      <DivisionRankings
+      <DivisionRankings class="ma-5"
         :title="'Bottom Jake'"
         :division="divisonTwoMembers"
       ></DivisionRankings>
     </v-row>
-    <v-row justify="center" class="mt-5">
+    <v-row justify="center" class="ma-5">
       <PlayoffStandings
+        v-if="nonDivisionRankings"
         :title="'Playoff Rankings'"
         :rankings="nonDivisionRankings"
       ></PlayoffStandings>
@@ -20,33 +21,29 @@
 </template>
 
 <script>
-import fleaFlickerAPI from "../../util/fleaflicker.js";
+
 import DivisionRankings from "../components/DivisionRankings.vue";
 import PlayoffStandings from "../components/PlayoffStandings.vue";
+import useLeagueData from '../composables/use-league-data.js';
+
 
 export default {
   name: "Home",
   components: { DivisionRankings, PlayoffStandings },
-  data() {
-    return {
-      leagueMembers: {},
-      console: "",
-    };
+  setup() {
+    const {members, year, getPlayoffData} = useLeagueData();
+    return {members, year, getPlayoffData};
   },
   mounted() {
-    this.getPlayoffData("2017");
+    this.year = 2020;
+    this.getPlayoffData(this.year);
   },
 
   methods: {
-    async getPlayoffData(year) {
-      await fleaFlickerAPI
-        .getPlayoffData(year)
-        .then((res) => (this.leagueMembers = res));
-    },
   },
   computed: {
     divisonOneMembers() {
-      return this.leagueMembers
+      return this.members
         .filter((x) => x.division.id == 590406)
         .sort((a, b) =>
           a.wins / a.losses == b.wins / a.losses
@@ -55,7 +52,7 @@ export default {
         );
     },
     divisonTwoMembers() {
-      return this.leagueMembers
+      return this.members
         .filter((x) => x.division.id == 590407)
         .sort((a, b) =>
           a.wins / a.losses == b.wins / a.losses
@@ -64,16 +61,16 @@ export default {
         );
     },
 
-    playoffRankings() {
-      // //check if top four contain both divisons
-      // let divOneCheck = this.topFour.some(x => x.division.id = 590407);
-      // let divTwoCheck = this.topFour.some(x => x.division.id = 590407);
-      // console.log(both);
+    // playoffRankings() {
+    //   // //check if top four contain both divisons
+    //   // let divOneCheck = this.topFour.some(x => x.division.id = 590407);
+    //   // let divTwoCheck = this.topFour.some(x => x.division.id = 590407);
+    //   // console.log(both);
 
-      return this.nonDivisionRankings();
-    },
+    //   return this.nonDivisionRankings();
+    // },
     nonDivisionRankings() {
-      let sorted = this.leagueMembers.slice().sort((a, b) => {
+      let sorted = this.members.slice().sort((a, b) => {
         let aRatio = a.wins / a.losses;
         let bRatio = b.wins / b.losses;
 
@@ -92,12 +89,12 @@ export default {
 
       return sorted;
     },
-    topFour() {
-      return this.nonDivisionRankings().splice(0, 4);
-    },
-    bottomFour() {
-      return this.nonDivisionRankings().splice(3, 4);
-    },
+    // topFour() {
+    //   return this.nonDivisionRankings().splice(0, 4);
+    // },
+    // bottomFour() {
+    //   return this.nonDivisionRankings().splice(3, 4);
+    // },
   },
 };
 </script>

@@ -29,7 +29,7 @@ export default class fleaFlickerAPI {
         }).then(res => res.rosters);
 
         rosters.forEach((roster) => {
-            console.log(roster);
+
             let obj = {
                 id: parseInt(roster.team.id),
                 initials: roster.team.initials,
