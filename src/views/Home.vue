@@ -13,7 +13,7 @@
     <v-row justify="center" class="mt-5">
       <PlayoffStandings
         :title="'Playoff Rankings'"
-        :rankings="playoffRankings"
+        :rankings="nonDivisionRankings"
       ></PlayoffStandings>
     </v-row>
   </v-container>
@@ -34,7 +34,7 @@ export default {
     };
   },
   mounted() {
-    this.getPlayoffData("2020");
+    this.getPlayoffData("2017");
   },
 
   methods: {
@@ -63,7 +63,16 @@ export default {
             : a.wins / a.losses < b.wins / a.losses
         );
     },
+
     playoffRankings() {
+      // //check if top four contain both divisons
+      // let divOneCheck = this.topFour.some(x => x.division.id = 590407);
+      // let divTwoCheck = this.topFour.some(x => x.division.id = 590407);
+      // console.log(both);
+
+      return this.nonDivisionRankings();
+    },
+    nonDivisionRankings() {
       let sorted = this.leagueMembers.slice().sort((a, b) => {
         let aRatio = a.wins / a.losses;
         let bRatio = b.wins / b.losses;
@@ -80,12 +89,14 @@ export default {
           return 1;
         }
       });
-      
-      // let divOneCount = 0;
-      // let divTwoCount = 0;
-      
-      
+
       return sorted;
+    },
+    topFour() {
+      return this.nonDivisionRankings().splice(0, 4);
+    },
+    bottomFour() {
+      return this.nonDivisionRankings().splice(3, 4);
     },
   },
 };
