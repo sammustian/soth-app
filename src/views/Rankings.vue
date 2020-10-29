@@ -16,13 +16,27 @@
       <v-spacer></v-spacer>
       <v-toolbar-items>
           <v-menu open-on-hover offset-y transition="scale-transition" origin="center center">
+              <template v-slot:activator="{ on, attrs }">
+                  <v-btn v-bind="attrs" v-on="on">
+                      Week {{selectedWeek}}
+                  </v-btn>
+              </template>
+              <v-list depressed>
+                  <v-list-item v-for="(item, index) in availableWeeks" :key="index+'_'+item">
+                      <v-list-item-action>
+                        <v-btn @click="changeYear(item)">Week {{item}}</v-btn>
+                      </v-list-item-action>
+                  </v-list-item>
+              </v-list>
+          </v-menu>
+          <v-menu open-on-hover offset-y transition="scale-transition" origin="center center">
                 <template v-slot:activator="{ on, attrs }">
                     <v-btn v-bind="attrs" v-on="on">
                         {{selectedYear}}
                     </v-btn>
                 </template>
                 <v-list depressed>
-                    <v-list-item v-for="(item, index) in avaliableYears" :key="index">
+                    <v-list-item v-for="(item, index) in avaliableYears" :key="index+'_'+item">
                        <v-list-item-action>
                           <v-btn @click="changeYear(item)">{{item}}</v-btn>
                         </v-list-item-action>
@@ -64,27 +78,29 @@ export default {
   data () {
     return {
       dataReady: false,
-      avaliableWeeks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
       avaliableYears: [2017, 2018, 2019, 2020],
-      selectedYear: 2020
+      selectedYear: 2020,
+      selectedWeek: null
     }
   },
   name: "Rankings",
   components: { DivisionRankings, PlayoffStandings },
   setup() {
-    const {members, year, getLeagueData, divisonOneMembers, divisonTwoMembers, nonDivisionRankings} = useLeagueData();
-    return {members, year, getLeagueData, divisonOneMembers, divisonTwoMembers, nonDivisionRankings};
+    const {members, getLeagueData, divisonOneMembers, divisonTwoMembers, nonDivisionRankings, defaultWeek, availableWeeks} = useLeagueData();
+    return {members, getLeagueData, divisonOneMembers, divisonTwoMembers, nonDivisionRankings, defaultWeek, availableWeeks};
   },
   async mounted() { 
     await this.getLeagueData(this.selectedYear);
     this.dataReady = true;
+    this.selectedWeek = this.defaultWeek;
   },
 
   methods: {
    async changeYear(year) {
       this.dataReady = false;
-      await this.getLeagueData(year);
+      await this.getLeagueData(year);      
       this.selectedYear = year;
+      this.selectedWeek = this.defaultWeek;
       this.dataReady = true;
     }
   },

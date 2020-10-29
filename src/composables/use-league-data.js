@@ -1,14 +1,18 @@
 import fleaFlickerAPI from "../../util/fleaflicker.js";
-import { 
+import {
   reactive,
   toRefs,
-  computed
+  computed,
+  ref
 } from "@vue/composition-api";
 
 export default function () {
   const leagueData = reactive({
-    members: []
+    members: [],
   });
+
+  let defaultWeek = ref(0);
+  let availableWeeks = ref([]);
 
   const divisonOneMembers = computed(() => {
     return leagueData.members
@@ -53,13 +57,21 @@ export default function () {
   const getLeagueData = async (year = 2020) => {
     await fleaFlickerAPI
       .getPlayoffData(year)
-      .then((res) => (leagueData.members = res));
+      .then((res) => {
+        // console.log(res);
+        leagueData.members = res.leagueData
+        defaultWeek.value = res.defaultWeek
+        availableWeeks.value = Array.from({length: res.defaultWeek}, (_, i) => i + 1)        
+        return {defaultWeek, leagueData}
+      });
   }
   return {
     ...toRefs(leagueData),
     getLeagueData,
     divisonOneMembers,
     divisonTwoMembers,
-    nonDivisionRankings
+    nonDivisionRankings,
+    defaultWeek,
+    availableWeeks
   }
 }
