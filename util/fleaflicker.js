@@ -29,6 +29,7 @@ export default class fleaFlickerAPI {
         }).then(res => res.rosters);
 
         rosters.forEach((roster) => {
+            
             let obj = {
                 id: parseInt(roster.team.id),
                 initials: roster.team.initials,
@@ -49,6 +50,7 @@ export default class fleaFlickerAPI {
             season: year
         }).then(res => res);
         for (let member of leagueMembers) {
+            
             let match = leagueInfo.divisions[0].teams.some((divisionTeam) => {
                 return divisionTeam.id == member.id
             });
@@ -83,7 +85,7 @@ export default class fleaFlickerAPI {
                     let homeMemberIndex = leagueMembers.findIndex((member) => member.id == game.home.id);
                     let awayMemberIndex = leagueMembers.findIndex((member) => member.id == game.away.id);
                     //@note: add win conditions for games not played and games in progress
-                    //  console.log(leagueMembers[awayMemberIndex]);
+                    
                     let awayMatchup = {
                         name: leagueMembers[awayMemberIndex].name,
                         id: leagueMembers[awayMemberIndex].id,
@@ -134,7 +136,7 @@ export default class fleaFlickerAPI {
             leagueMembers.forEach((member, index) => {
                 let wins = 0;
                 let losses = 0;
-                //console.log(member);
+                
                 member.games.forEach((game) => {
                     if (game.win == true) {
                         wins++;
@@ -143,7 +145,7 @@ export default class fleaFlickerAPI {
                     }
                 });
 
-                //console.log(member.name, wins, losses);
+                
                 leagueMembers[index].standings = `${wins}-${losses}`;
                 leagueMembers[index].wins = wins;
                 leagueMembers[index].losses = losses;

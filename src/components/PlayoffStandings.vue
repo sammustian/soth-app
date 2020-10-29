@@ -1,10 +1,8 @@
 <template>
-  <section class="playoff-standings">
-      <v-card width="500">
+  <section  class="playoff-standings">
+      <v-card width="auto">
       <v-toolbar color="dark" dark>
         <v-toolbar-title>{{ title }}</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-toolbar-title>Week: {{rankings[0].games.length}}</v-toolbar-title>
       </v-toolbar>
       <v-list three-line>
         <template v-for="(item, index) in rankings">

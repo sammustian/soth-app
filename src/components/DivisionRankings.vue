@@ -1,6 +1,6 @@
 <template>
   <section class="division-rankings">
-    <v-card width="500">
+    <v-card width="auto">
       <v-toolbar color="dark" dark>
         <v-toolbar-title>{{ title }}</v-toolbar-title>
         <v-spacer></v-spacer>

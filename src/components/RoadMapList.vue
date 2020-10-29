@@ -1,7 +1,7 @@
 <template lang="html">
 
   <section class="road-map-list">
-    <h1>road-map-list Component</h1>
+    <h1>SOTH App Ideas</h1>
     <v-row>
       <v-col v-for="(item, idx) in roadMapItems" :key="idx">
         <v-card shaped elevation="2" width="400px">
