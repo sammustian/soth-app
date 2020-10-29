@@ -22,6 +22,7 @@ export default class fleaFlickerAPI {
     static async getLeagueMembers(year) {
 
         //get members
+
         let leagueMembers = [];
         let rosters = await this.callEndPoint("FetchLeagueRosters", {
             season: year,
@@ -69,19 +70,21 @@ export default class fleaFlickerAPI {
         return leagueMembers;
     }
 
-    static async buildPlayerStandingsDataStructure(year) {
-        let leagueMembers = await this.getLeagueMembers(year);
-        let weeks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-        let results = {};
-        for (let week of weeks) {
-            let games = await this.callEndPoint("FetchLeagueScoreboard", {
-                season: year,
-                scoring_period: week
-            }).then(res => res.games);
+    static async buildPlayerStandingsDataStructure() {
+        let results = [];
+        let years = [2017, 2018, 2019, 2020];
+        for (let year of years) {
+            let leagueMembers = await this.getLeagueMembers(year);
+            let weeks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+            results.year = {};
+            for (let week of weeks) {
+                let games = await this.callEndPoint("FetchLeagueScoreboard", {
+                    season: year,
+                    scoring_period: week
+                }).then(res => res.games);
 
 
-            for (let game of games) {
-                if (parseInt(game.awayScore.score.formatted) !== 0 && parseInt(game.homeScore.score.formatted) !== 0) {
+                for (let game of games) {
                     let homeMemberIndex = leagueMembers.findIndex((member) => member.id == game.home.id);
                     let awayMemberIndex = leagueMembers.findIndex((member) => member.id == game.away.id);
                     //@note: add win conditions for games not played and games in progress
@@ -125,39 +128,37 @@ export default class fleaFlickerAPI {
                         isDivisional: (game.isDivisional ? true : false),
                         gameInProgress: (game.isInProgress ? true : false)
                     });
-
-                } else {
-                    // console.log(game);
-                    break;
-                    
                 }
-                results.defaultWeek = week;
-            }
-            //record game to leagueMember
-            leagueMembers.forEach((member, index) => {
-                let wins = 0;
-                let losses = 0;
+                //record game to leagueMember
+                leagueMembers.forEach((member, index) => {
+                    let wins = 0;
+                    let losses = 0;
 
-                member.games.forEach((game) => {
-                    if (game.win == true) {
-                        wins++;
-                    } else if (game.win == false) {
-                        losses++;
-                    }
+                    member.games.forEach((game) => {
+                        if (game.win == true) {
+                            wins++;
+                        } else if (game.win == false) {
+                            losses++;
+                        }
+                    });
+
+
+                    leagueMembers[index].standings = `${wins}-${losses}`;
+                    leagueMembers[index].wins = wins;
+                    leagueMembers[index].losses = losses;
                 });
-
-
-                leagueMembers[index].standings = `${wins}-${losses}`;
-                leagueMembers[index].wins = wins;
-                leagueMembers[index].losses = losses;
+            }
+            results.push({
+                year: year,
+                leagueData: leagueMembers
             });
         }
-        results.leagueData = leagueMembers;
+        console.log(results);
         return results;
     }
 
-    static async getPlayoffData(year) {
-        return await this.buildPlayerStandingsDataStructure(year);
+    static async getPlayoffData() {
+        return await this.buildPlayerStandingsDataStructure();
 
     }
 

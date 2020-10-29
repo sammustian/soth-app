@@ -47,7 +47,7 @@
     </v-toolbar>
     <v-row justify="center">
       <v-col>
-        <PlayoffStandings
+        <!-- <PlayoffStandings
           :title="'Playoff Rankings'"
           :rankings="nonDivisionRankings"
         ></PlayoffStandings>
@@ -61,7 +61,7 @@
         <DivisionRankings class="ma-5"
           :title="divisionTwoTitle"
           :division="divisonTwoMembers"
-        ></DivisionRankings>
+        ></DivisionRankings> -->
       </v-col>
     </v-row>
   </v-container>
@@ -70,8 +70,8 @@
 
 <script>
 
-import DivisionRankings from "../components/DivisionRankings.vue";
-import PlayoffStandings from "../components/PlayoffStandings.vue";
+// import DivisionRankings from "../components/DivisionRankings.vue";
+// import PlayoffStandings from "../components/PlayoffStandings.vue";
 import useLeagueData from '../composables/use-league-data.js';
 
 export default {
@@ -80,19 +80,31 @@ export default {
       dataReady: false,
       avaliableYears: [2017, 2018, 2019, 2020],
       selectedYear: 2020,
-      selectedWeek: null
+      selectedWeek: null,
+      availableWeeks:[]
     }
   },
   name: "Rankings",
-  components: { DivisionRankings, PlayoffStandings },
+  // components: { DivisionRankings, PlayoffStandings },
   setup() {
-    const {members, getLeagueData, divisonOneMembers, divisonTwoMembers, nonDivisionRankings, defaultWeek, availableWeeks} = useLeagueData();
-    return {members, getLeagueData, divisonOneMembers, divisonTwoMembers, nonDivisionRankings, defaultWeek, availableWeeks};
+    const {
+      data, 
+      getLeagueData, 
+      // divisonOneMembers, 
+      // divisonTwoMembers, 
+      // nonDivisionRankings
+      } = useLeagueData();
+    return {
+        data,
+        getLeagueData, 
+        // divisonOneMembers, 
+        // divisonTwoMembers, 
+        // nonDivisionRankings
+      };
   },
   async mounted() { 
-    await this.getLeagueData(this.selectedYear);
+    await this.getLeagueData();
     this.dataReady = true;
-    this.selectedWeek = this.defaultWeek;
   },
 
   methods: {
