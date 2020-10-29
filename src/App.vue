@@ -10,8 +10,24 @@
         color="secondary"
         elevation="10"
         large
+        :to="'/rankings'"
+        >Rankings</v-btn
+      >
+      <v-btn
+        class="mx-3"
+        color="secondary"
+        elevation="10"
+        large
         :to="'/roadmap'"
         >Roadmap</v-btn
+      >
+      <v-btn
+        class="mx-3"
+        color="secondary"
+        elevation="10"
+        large
+        :to="'/playoffs'"
+        >Playoffs</v-btn
       >
       <v-spacer></v-spacer>
       <v-btn

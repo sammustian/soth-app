@@ -1,11 +1,11 @@
 <template>
-  <h1>Welcome Assholes</h1>
+  <h1>In progress</h1>
 </template>
 
 <script>
 
 export default {
-  name: "Home",
+  name: "Playoffs",
   components: { },
   setup() {
   },
