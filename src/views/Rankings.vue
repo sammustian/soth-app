@@ -47,9 +47,9 @@
     </v-toolbar>
     <v-row justify="center">
       <v-col>
-        <!-- <PlayoffStandings
+          <PlayoffStandings
           :title="'Playoff Rankings'"
-          :rankings="nonDivisionRankings"
+          :rankings="selectedYearLeagueData.leagueData"
         ></PlayoffStandings>
       </v-col>
       <v-col>
@@ -61,7 +61,7 @@
         <DivisionRankings class="ma-5"
           :title="divisionTwoTitle"
           :division="divisonTwoMembers"
-        ></DivisionRankings> -->
+        ></DivisionRankings>
       </v-col>
     </v-row>
   </v-container>
@@ -70,36 +70,34 @@
 
 <script>
 
-// import DivisionRankings from "../components/DivisionRankings.vue";
-// import PlayoffStandings from "../components/PlayoffStandings.vue";
+import DivisionRankings from "../components/DivisionRankings.vue";
+import PlayoffStandings from "../components/PlayoffStandings.vue";
 import useLeagueData from '../composables/use-league-data.js';
 
 export default {
   data () {
     return {
       dataReady: false,
-      avaliableYears: [2017, 2018, 2019, 2020],
       selectedYear: 2020,
       selectedWeek: null,
       availableWeeks:[]
     }
   },
   name: "Rankings",
-  // components: { DivisionRankings, PlayoffStandings },
+  components: { 
+    DivisionRankings, 
+    PlayoffStandings 
+    },
   setup() {
+
     const {
       data, 
       getLeagueData, 
-      // divisonOneMembers, 
-      // divisonTwoMembers, 
-      // nonDivisionRankings
       } = useLeagueData();
+
     return {
         data,
         getLeagueData, 
-        // divisonOneMembers, 
-        // divisonTwoMembers, 
-        // nonDivisionRankings
       };
   },
   async mounted() { 
@@ -117,13 +115,102 @@ export default {
     }
   },
   computed: {
+  divisonOneMembers() {
+    return this.selectedYearLeagueData.leagueData
+      .filter((x) => x.division.id == 590406)
+      .sort((a, b) =>
+        a.wins / a.losses == b.wins / a.losses ?
+        a.pointsFor.value < b.pointsFor.value :
+        a.wins / a.losses < b.wins / a.losses
+      );
+  },
+
+  divisonTwoMembers() {
+    return this.selectedYearLeagueData.leagueData
+      .filter((x) => x.division.id == 590407)
+      .sort((a, b) =>
+        a.wins / a.losses == b.wins / a.losses ?
+        a.pointsFor.value < b.pointsFor.value :
+        a.wins / a.losses < b.wins / a.losses
+      );
+  },
+
+  nonDivisionRankings() {
+    let sorted = this.selectedYearLeagueData.leagueData.slice().sort((a, b) => {
+      let aRatio = a.wins / a.losses;
+      let bRatio = b.wins / b.losses;
+
+      if (aRatio == bRatio) {
+        if (a.pointsFor.value < b.pointsFor.value) {
+          return 1;
+        } else {
+          return -1;
+        }
+      } else if (aRatio > bRatio) {
+        return -1;
+      } else if (aRatio < bRatio) {
+        return 1;
+      }
+    });
+    return sorted;
+  },
     divisionOneTitle() {
       return this.divisonOneMembers[0].division.name;
     },
     divisionTwoTitle() {
       return this.divisonTwoMembers[0].division.name;
     },
-    
+    avaliableYears() {
+      return this.data.map(x => x.year);
+    },
+    selectedYearLeagueData() {
+      return this.data.filter(x => x.year == this.selectedYear)[0];
+    }
   },
 };
+
+
+/***COMMENTED CODE */
+
+// const divisonOneMembers = computed(() => {
+  //   return leagueData.members
+  //     .filter((x) => x.division.id == 590406)
+  //     .sort((a, b) =>
+  //       a.wins / a.losses == b.wins / a.losses ?
+  //       a.pointsFor.value < b.pointsFor.value :
+  //       a.wins / a.losses < b.wins / a.losses
+  //     );
+  // });
+
+  // const divisonTwoMembers = computed(() => {
+  //   return leagueData.members
+  //     .filter((x) => x.division.id == 590407)
+  //     .sort((a, b) =>
+  //       a.wins / a.losses == b.wins / a.losses ?
+  //       a.pointsFor.value < b.pointsFor.value :
+  //       a.wins / a.losses < b.wins / a.losses
+  //     );
+  // });
+
+  // const nonDivisionRankings = computed(() => {
+  //   let sorted = leagueData.members.slice().sort((a, b) => {
+  //     let aRatio = a.wins / a.losses;
+  //     let bRatio = b.wins / b.losses;
+
+  //     if (aRatio == bRatio) {
+  //       if (a.pointsFor.value < b.pointsFor.value) {
+  //         return 1;
+  //       } else {
+  //         return -1;
+  //       }
+  //     } else if (aRatio > bRatio) {
+  //       return -1;
+  //     } else if (aRatio < bRatio) {
+  //       return 1;
+  //     }
+  //   });
+  //   return sorted;
+  // });
 </script>
+
+
