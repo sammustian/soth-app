@@ -56,7 +56,7 @@
 </template>
 
 <script lang="js">
-import { mapActions, mapState } from 'vuex';
+
   export default  {
     name: 'road-map-list',
     props: [],
@@ -69,22 +69,22 @@ import { mapActions, mapState } from 'vuex';
       }
     },
     methods: {
-      ...mapActions({
-        load: 'bindRoadMapItemsRef',
-        addItem: 'bindAddRoadMapItemRef',
-        removeItem: 'bindRemoveRoadMapItemRef'
-        // add: 'addItem',
-        // remove: 'removeItem'
-      }),
-      add(item) {
-        this.addItem(item);
-        this.input = "";
-      },
-      remove(id) {
-        this.removeItem(id);
-      }
+      // ...mapActions({
+      //   load: 'bindRoadMapItemsRef',
+      //   addItem: 'bindAddRoadMapItemRef',
+      //   removeItem: 'bindRemoveRoadMapItemRef'
+      //   // add: 'addItem',
+      //   // remove: 'removeItem'
+      // }),
+      // add(item) {
+      //   this.addItem(item);
+      //   this.input = "";
+      // },
+      // remove(id) {
+      //   this.removeItem(id);
+      // }
     },
-    computed: mapState(['roadMapItems'])
+    // computed: mapState(['roadMapItems'])
     // roadMapItems() {
     //   return this.$store.getters.getRoadMapItems;
     // }

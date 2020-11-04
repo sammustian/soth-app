@@ -73,6 +73,7 @@ export default class fleaFlickerAPI {
     static async buildPlayerStandingsDataStructure() {
         let results = [];
         let years = [2017, 2018, 2019, 2020];
+        // let years = [2020];
         for (let year of years) {
             let leagueMembers = await this.getLeagueMembers(year);
             let weeks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];

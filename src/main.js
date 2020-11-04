@@ -1,10 +1,9 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-import store from './store'
-import vuetify from './plugins/vuetify';
-import { firestorePlugin } from 'vuefire';
-import VueCompositionAPI from '@vue/composition-api';
+import vuetify from './plugins/vuetify'
+import { firestorePlugin } from 'vuefire'
+import VueCompositionAPI from '@vue/composition-api'
 
 Vue.use(VueCompositionAPI)
 Vue.use(firestorePlugin)
@@ -12,8 +11,7 @@ Vue.use(firestorePlugin)
 Vue.config.productionTip = false
 
 new Vue({
-  router,
-  store,
-  vuetify,
-  render: h => h(App)
+    router,
+    vuetify,
+    render: (h) => h(App),
 }).$mount('#app')
