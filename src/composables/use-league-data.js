@@ -1,4 +1,4 @@
-import fleaFlickerAPI from '../../util/fleaflicker.js'
+import fleaFlickerAPI from '../util/fleaflicker.js'
 import { computed } from '@vue/composition-api'
 import Vue from 'vue'
 
