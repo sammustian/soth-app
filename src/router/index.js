@@ -13,7 +13,7 @@ const routes = [
   {
     path: '/rankings',
     name: 'Rankings',
-    component: () => import(/* webpackChunkName: "Rankings" */ '../views/Rankings.vue')
+    component: () => import(/* webpackChunkName: "Rankings" */ '../views/RankingsView.vue')
   },
   {
     path: '/playoffs',
