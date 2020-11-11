@@ -1,12 +1,12 @@
 <template>
 <section class="playoff-standings">
-    <v-progress-circular indeterminate color="purple"></v-progress-circular>
-    <v-card width="auto">
+    <v-progress-circular v-show="api_status === 'FETCHING'" indeterminate color="purple"></v-progress-circular>
+    <v-card v-show="api_status === 'FETCHING_SUCCESS'" width="auto">
         <v-toolbar color="dark" dark>
             <v-toolbar-title>{{ title }}</v-toolbar-title>
         </v-toolbar>
         <v-list three-line>
-            <!-- <template v-for="(item, index) in leagueData">
+            <template v-for="(item, index) in nonDivisionRankings">
                 <v-list-item :key="item.id">
                     <v-list-item-avatar>
                         <v-img :src="item.logoUrl"></v-img>
@@ -19,7 +19,7 @@
                         </v-list-item-subtitle>
                     </v-list-item-content>
                 </v-list-item>
-            </template> -->
+            </template>
         </v-list>
     </v-card>
 </section>
@@ -40,22 +40,18 @@ export default {
     setup(props) {
         const {
             leagueData,
-            dataLoaded,
             api_status,
-            getLeagueData,
-            // selectedYearLeagueData,
-            // nonDivisionRankings
+            selectedYearLeagueData,
+            nonDivisionRankings,
         } = useLeagueData(props.selectedYear, {
             fetchImmediately: true
         });
 
         return {
             leagueData,
-            dataLoaded,
             api_status,
-            getLeagueData,
-            // selectedYearLeagueData,
-            // nonDivisionRankings
+            selectedYearLeagueData,
+            nonDivisionRankings,
         };
     },
     data() {
