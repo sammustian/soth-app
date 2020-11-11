@@ -3,7 +3,7 @@
 const leagueID = 199769
 
 export default class fleaFlickerAPI {
-  constructor() {}
+  constructor() { }
 
   static async callEndPoint(route, options = {}) {
     options.league_id = leagueID
@@ -91,13 +91,13 @@ export default class fleaFlickerAPI {
             (member) => member.id == game.away.id,
           )
           //@note: add win conditions for games not played and games in progress
-
           let awayMatchup = {
             name: leagueMembers[awayMemberIndex].name,
             id: leagueMembers[awayMemberIndex].id,
             score: game.awayScore.score,
             isDivisional: game.isDivisional ? true : false,
             gameInProgress: game.isInProgress ? true : false,
+
           }
           let homeMatchup = {
             name: leagueMembers[homeMemberIndex].name,
@@ -115,12 +115,16 @@ export default class fleaFlickerAPI {
             win: game.isInProgress
               ? null
               : game.homeResult == 'WIN'
-              ? true
-              : false,
+                ? true
+                : false,
             matchup: awayMatchup,
-            score: game.homeScore,
+            score: {
+              formatted: game.homeScore.score.formatted,
+              value: game.homeScore.score.value,
+            },
             isDivisional: game.isDivisional ? true : false,
             gameInProgress: game.isInProgress ? true : false,
+            gamePlayed: Object.hasOwnProperty.call(game, 'homeResult') ? true : false
           })
 
           leagueMembers[awayMemberIndex].games.push({
@@ -131,12 +135,16 @@ export default class fleaFlickerAPI {
             win: game.isInProgress
               ? null
               : game.awayResult == 'WIN'
-              ? true
-              : false,
+                ? true
+                : false,
             matchup: homeMatchup,
-            score: game.awayScore,
+            score: {
+              formatted: game.awayScore.score.formatted,
+              value: game.awayScore.score.value,
+            },
             isDivisional: game.isDivisional ? true : false,
             gameInProgress: game.isInProgress ? true : false,
+            gamePlayed: Object.hasOwnProperty.call(game, 'awayResult') ? true : false
           })
         }
         //record game to leagueMember
@@ -145,9 +153,9 @@ export default class fleaFlickerAPI {
           let losses = 0
 
           member.games.forEach((game) => {
-            if (game.win == true) {
+            if (game.win == true && game.gamePlayed) {
               wins++
-            } else if (game.win == false) {
+            } else if (game.win == false && game.gamePlayed) {
               losses++
             }
           })
@@ -156,13 +164,13 @@ export default class fleaFlickerAPI {
           leagueMembers[index].wins = wins
           leagueMembers[index].losses = losses
         })
+
       }
       results.push({
         year: year,
         leagueData: leagueMembers,
       })
     }
-    console.log(results)
     return results
   }
 
